@@ -12,7 +12,7 @@ public class ItemViewModel extends AndroidViewModel {
     LiveData<List<ToDoItem>> mItems;
     ItemRepository repository;
 
-    public ItemViewModel(@NonNull Application application) {
+    public ItemViewModel(Application application) {
         super(application);
 
         repository = new ItemRepository(application);
@@ -24,6 +24,6 @@ public class ItemViewModel extends AndroidViewModel {
     }
 
     public void insertItem(ToDoItem item) {
-        repository.insertItem(item);
+        repository.insert(item);
     }
 }

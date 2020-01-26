@@ -1,12 +1,16 @@
 package com.appify.roomtutorial;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.appify.roomtutorial.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,7 +25,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.UUID;
+
+public class MainActivity extends AppCompatActivity implements HomeFragment.FabClickListener {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -65,5 +71,26 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onClick() {
+        Intent intent = new Intent(this, AddItemActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && requestCode == RESULT_OK) {
+            String name = getIntent().getStringExtra("item");
+            String desc = getIntent().getStringExtra("desc");
+            String date = getIntent().getStringExtra("date");
+            boolean finished = getIntent().getBooleanExtra("finished", false);
+            String id = UUID.randomUUID().toString();
+
+            ToDoItem item = new ToDoItem(id, name, desc, date, finished);
+        }
     }
 }

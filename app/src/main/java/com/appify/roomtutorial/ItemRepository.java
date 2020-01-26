@@ -1,9 +1,8 @@
 package com.appify.roomtutorial;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.util.List;
 
@@ -16,42 +15,29 @@ public class ItemRepository {
     public ItemRepository(Application application) {
         ListDatabase db = ListDatabase.getInstance(application);
         dao = db.itemDAO();
-        getAllItems();
+        mItems = dao.getAllItems();
     }
 
-    public void insertItem(final ToDoItem item) {
-        AsyncTask<ToDoItem, Void, Void> insertTask = new AsyncTask<ToDoItem, Void, Void>() {
-            @Override
-            protected Void doInBackground(ToDoItem... toDoItems) {
-                dao.insertItem(toDoItems[0]);
-                return null;
-            }
+    class InsertTask extends AsyncTask<ToDoItem, Void, Void> {
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                ///Toast.makeText(application, "Item inserted successfully", Toast.LENGTH_SHORT).show();
-                super.onPostExecute(aVoid);
-            }
-        }.execute(item);
-    }
+        @Override
+        protected Void doInBackground(ToDoItem... toDoItems) {
+            dao.insertItem(toDoItems[0]);
+            return null;
+        }
 
-    public void getAllItems() {
-        AsyncTask<Void, Void, LiveData<List<ToDoItem>>> getItemsTask = new AsyncTask<Void, Void, LiveData<List<ToDoItem>>>() {
-            @Override
-            protected LiveData<List<ToDoItem>> doInBackground(Void... voids) {
-                mItems = dao.getAllItems();
-                return mItems;
-            }
-
-            @Override
-            protected void onPostExecute(LiveData<List<ToDoItem>> listLiveData) {
-                super.onPostExecute(listLiveData);
-                mItems = listLiveData;
-            }
-        }.execute();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(getClass().getSimpleName(), "Item added successfully");
+        }
     }
 
     public LiveData<List<ToDoItem>> getmItems() {
         return mItems;
+    }
+
+    public void insert(ToDoItem item) {
+        new InsertTask().execute(item);
     }
 }
